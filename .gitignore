@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.dev.vars
+.env
+.env.*
+.wrangler/
+*.log
+worker-configuration.d.ts
+dist/salesmanager/.dev.vars

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Check 2024 Data</title>
+</head>
+<body>
+    <h1>Dados de Vendas 2024</h1>
+    <div id="result">Carregando...</div>
+    
+    <script>
+        fetch('/api/temp/check-data-2024')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result').innerHTML = `
+                    <p><strong>Primeira data:</strong> ${data.primeira_data || 'N/A'}</p>
+                    <p><strong>Última data:</strong> ${data.ultima_data || 'N/A'}</p>
+                    <p><strong>Primeiro mês:</strong> ${data.primeiro_mes || 'N/A'}</p>
+                    <p><strong>Último mês:</strong> ${data.ultimo_mes || 'N/A'}</p>
+                    <p><strong>Total de registros:</strong> ${data.total_registros || 0}</p>
+                `;
+            })
+            .catch(error => {
+                document.getElementById('result').innerHTML = 'Erro: ' + error;
+            });
+    </script>
+</body>
+</html>
