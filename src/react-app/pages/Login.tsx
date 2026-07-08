@@ -1,4 +1,4 @@
-import { useAuth } from '@getmocha/users-service/react';
+import { useAuth } from '@/react-app/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { TrendingUp, BarChart3, Package, Database, AlertCircle } from 'lucide-react';
@@ -16,7 +16,7 @@ export default function Login() {
       await redirectToLogin();
     } catch (err) {
       console.error('Erro ao fazer login:', err);
-      setError('Erro ao conectar com o serviço de autenticação. Este app precisa ser configurado com credenciais válidas do Mocha Users Service. Entre em contato com o suporte.');
+      setError('Erro ao conectar com o serviço de autenticação do Google. Verifique se as credenciais OAuth estão configuradas corretamente. Entre em contato com o suporte.');
     }
   };
 
@@ -33,7 +33,7 @@ export default function Login() {
         <div className="space-y-6">
           <div className="flex items-center space-x-3">
             <img 
-              src="https://mocha-cdn.com/019a55e0-b253-7447-911b-2276e1caf514/logo-sales-manager.png"
+              src="/logo-sales-manager.png"
               alt="SalesManager Logo"
               className="w-16 h-16 rounded-2xl object-cover shadow-2xl shadow-blue-500/50"
             />

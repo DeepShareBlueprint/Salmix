@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider, useAuth } from '@getmocha/users-service/react';
+import { AuthProvider, useAuth } from '@/react-app/hooks/useAuth';
 import HomePage from "@/react-app/pages/Home";
 import Login from "@/react-app/pages/Login";
 import AuthCallback from "@/react-app/pages/AuthCallback";

@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "019ad0f2-c9f8-7481-8fbd-89afe6bb96bd",
+  "name": "salesmanager",
   "main": "./src/worker/index.ts",
   "compatibility_date": "2025-06-17",
   "compatibility_flags": ["nodejs_compat"],
@@ -14,14 +14,8 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "019ad0f2-c9f8-7481-8fbd-89afe6bb96bd",
-      "database_id": "019ad0f2-c9f8-7481-8fbd-89afe6bb96bd"
-    }
-  ],
-  "r2_buckets": [
-    {
-      "binding": "R2_BUCKET",
-      "bucket_name": "019ad0f2-c9f8-7481-8fbd-89afe6bb96bd"
+      "database_name": "salesmanager-db",
+      "database_id": "a34890d4-19c9-4f70-a10b-b1f08c3fe330"
     }
   ]
 }

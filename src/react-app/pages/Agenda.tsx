@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '@getmocha/users-service/react';
+import { useAuth } from '@/react-app/hooks/useAuth';
 import Navbar from '@/react-app/components/Navbar';
 import { Calendar, Clock, Plus, Edit2, Trash2, User, FileText, X } from 'lucide-react';
 import { useAgenda } from '@/react-app/hooks/useAgenda';

@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { useAuth } from '@getmocha/users-service/react';
+import { useAuth } from '@/react-app/hooks/useAuth';
 import Navbar from '@/react-app/components/Navbar';
 import { Calendar, Plus, Edit2, Trash2, X, ChevronLeft, ChevronRight, Grid3x3, List, Columns } from 'lucide-react';
 import { useDiarioCompromissos } from '@/react-app/hooks/useDiarioCompromissos';

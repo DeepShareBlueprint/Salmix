@@ -159,7 +159,7 @@ export default function ListaPedidos() {
     
     // Add logo on the right side
     try {
-      const logoUrl = 'https://mocha-cdn.com/019a55e0-b253-7447-911b-2276e1caf514/Daxtellk-Logomarca.png';
+      const logoUrl = '/daxtellk-logomarca.png';
       doc.addImage(logoUrl, 'PNG', 150, 10, 45, 15);
     } catch (error) {
       console.error('Erro ao adicionar logo ao PDF:', error);

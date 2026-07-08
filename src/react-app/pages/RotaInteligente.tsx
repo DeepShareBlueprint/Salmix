@@ -14,7 +14,7 @@ import {
   Calendar,
   X
 } from 'lucide-react';
-import { useAuth } from '@getmocha/users-service/react';
+import { useAuth } from '@/react-app/hooks/useAuth';
 
 interface Cliente {
   id: string;

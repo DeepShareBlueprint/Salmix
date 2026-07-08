@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '@/react-app/components/Navbar';
 import { ShoppingCart, Plus, Trash2, AlertTriangle, Check, User, Package, Calendar, Percent, X } from 'lucide-react';
 import { usePedidos } from '@/react-app/hooks/usePedidos';
-import { useAuth } from '@getmocha/users-service/react';
+import { useAuth } from '@/react-app/hooks/useAuth';
 import type { OrderItem, Cliente, Inventory } from '@/shared/types';
 
 export default function NovoPedido() {

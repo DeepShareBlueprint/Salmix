@@ -2,12 +2,13 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import {
   authMiddleware,
-  getOAuthRedirectUrl,
-  exchangeCodeForSessionToken,
-  deleteSession,
-  MOCHA_SESSION_TOKEN_COOKIE_NAME,
-} from "@getmocha/users-service/backend";
-import { getCookie, setCookie } from "hono/cookie";
+  buildGoogleAuthorizeUrl,
+  clearSessionCookie,
+  exchangeGoogleCodeForUser,
+  issueSessionCookie,
+  setOAuthStateCookie,
+  verifyOAuthStateCookie,
+} from "./auth";
 
 import type { DashboardKPIs } from "@/shared/types";
 import { Resend } from 'resend';
@@ -20,11 +21,10 @@ app.use("/*", cors());
 // ==================== AUTH ENDPOINTS ====================
 
 app.get("/api/oauth/google/redirect_url", async (c) => {
-  const redirectUrl = await getOAuthRedirectUrl("google", {
-    apiUrl: (c.env as any).MOCHA_USERS_SERVICE_API_URL,
-    apiKey: (c.env as any).MOCHA_USERS_SERVICE_API_KEY,
-  });
-  return c.json({ redirectUrl }, 200);
+  const redirectUri = new URL("/auth/callback", c.req.url).toString();
+  const { url, state } = buildGoogleAuthorizeUrl(c.env, redirectUri);
+  setOAuthStateCookie(c, state);
+  return c.json({ redirectUrl: url }, 200);
 });
 
 app.post("/api/sessions", async (c) => {
@@ -32,42 +32,31 @@ app.post("/api/sessions", async (c) => {
   if (!body.code) {
     return c.json({ error: "No authorization code provided" }, 400);
   }
+  if (!body.state || !verifyOAuthStateCookie(c, body.state)) {
+    return c.json({ error: "Invalid or missing OAuth state" }, 400);
+  }
 
-  const sessionToken = await exchangeCodeForSessionToken(body.code, {
-    apiUrl: (c.env as any).MOCHA_USERS_SERVICE_API_URL,
-    apiKey: (c.env as any).MOCHA_USERS_SERVICE_API_KEY,
-  });
+  const redirectUri = new URL("/auth/callback", c.req.url).toString();
+  let user;
+  try {
+    user = await exchangeGoogleCodeForUser(c.env, body.code, redirectUri);
+  } catch (err) {
+    console.error("Erro ao trocar código do Google:", err);
+    return c.json({ error: "Falha ao autenticar com o Google" }, 401);
+  }
 
-  setCookie(c, MOCHA_SESSION_TOKEN_COOKIE_NAME, sessionToken, {
-    httpOnly: true,
-    path: "/",
-    sameSite: "none",
-    secure: true,
-    maxAge: 60 * 60, // 60 minutos
-  });
+  await issueSessionCookie(c, c.env, user);
 
   return c.json({ success: true }, 200);
 });
 
 app.get("/api/users/me", authMiddleware, async (c) => {
   const user = c.get("user");
-  
+
   if (!user) {
     return c.json({ error: "User not found" }, 401);
   }
-  
-  // Renovar cookie de sessão a cada requisição bem-sucedida (60 minutos de inatividade)
-  const sessionToken = getCookie(c, MOCHA_SESSION_TOKEN_COOKIE_NAME);
-  if (sessionToken) {
-    setCookie(c, MOCHA_SESSION_TOKEN_COOKIE_NAME, sessionToken, {
-      httpOnly: true,
-      path: "/",
-      sameSite: "none",
-      secure: true,
-      maxAge: 60 * 60, // 60 minutos
-    });
-  }
-  
+
   console.log('🔍 /api/users/me - Email do Google:', user.email);
   console.log('🔍 /api/users/me - Dados completos do usuário:', JSON.stringify(user));
   
@@ -143,23 +132,7 @@ app.get("/api/users/me", authMiddleware, async (c) => {
 });
 
 app.get("/api/logout", async (c) => {
-  const sessionToken = getCookie(c, MOCHA_SESSION_TOKEN_COOKIE_NAME);
-
-  if (typeof sessionToken === "string") {
-    await deleteSession(sessionToken, {
-      apiUrl: (c.env as any).MOCHA_USERS_SERVICE_API_URL,
-      apiKey: (c.env as any).MOCHA_USERS_SERVICE_API_KEY,
-    });
-  }
-
-  setCookie(c, MOCHA_SESSION_TOKEN_COOKIE_NAME, "", {
-    httpOnly: true,
-    path: "/",
-    sameSite: "none",
-    secure: true,
-    maxAge: 0,
-  });
-
+  clearSessionCookie(c);
   return c.json({ success: true }, 200);
 });
 
@@ -2292,7 +2265,7 @@ app.post("/api/ai/comentario-executivo", authMiddleware, async (c) => {
     const data = await c.req.json();
     console.log('📊 Dados recebidos:', JSON.stringify(data));
     
-    const apiKey = process.env.OPENAI_API_KEY;
+    const apiKey = c.env.OPENAI_API_KEY;
     console.log('🔑 API Key configurada:', apiKey ? 'SIM' : 'NÃO');
     
     if (!apiKey) {
@@ -2397,7 +2370,7 @@ app.post("/api/ai/briefing-vendas", authMiddleware, async (c) => {
     const data = await c.req.json();
     console.log('📊 Dados recebidos:', JSON.stringify(data));
     
-    const apiKey = (c.env as any).OPENAI_API_KEY;
+    const apiKey = c.env.OPENAI_API_KEY;
     console.log('🔑 API Key configurada:', apiKey ? 'SIM' : 'NÃO');
     
     if (!apiKey) {
@@ -3093,7 +3066,8 @@ app.post("/api/test-email", authMiddleware, async (c) => {
     ];
     
     // Enviar email de teste
-    await sendOrderEmail(c.env, db, testOrder, testItems);
+    const logoUrl = new URL('/daxtellk-logomarca.png', c.req.url).toString();
+    await sendOrderEmail(c.env, db, testOrder, testItems, logoUrl);
     
     const recipientEmails = (recipients as any[]).map(r => r.email);
     
@@ -3161,7 +3135,7 @@ async function generateOrderNumber(db: any): Promise<string> {
 }
 
 // Função auxiliar para gerar PDF do pedido
-async function generateOrderPDF(db: any, order: any, items: any[]): Promise<ArrayBuffer> {
+async function generateOrderPDF(db: any, order: any, items: any[], logoUrl: string): Promise<ArrayBuffer> {
   // Importar dinamicamente jsPDF no worker
   const { jsPDF } = await import('jspdf');
   const autoTable = (await import('jspdf-autotable')).default;
@@ -3198,7 +3172,6 @@ async function generateOrderPDF(db: any, order: any, items: any[]): Promise<Arra
   
   // Add logo on the right side
   try {
-    const logoUrl = 'https://mocha-cdn.com/019a55e0-b253-7447-911b-2276e1caf514/Daxtellk-Logomarca.png';
     doc.addImage(logoUrl, 'PNG', 150, 10, 45, 15);
   } catch (error) {
     console.error('Erro ao adicionar logo ao PDF:', error);
@@ -3396,7 +3369,7 @@ async function generateOrderPDF(db: any, order: any, items: any[]): Promise<Arra
 }
 
 // Função auxiliar para gerar e enviar PDF do pedido por email
-async function sendOrderEmail(env: Env, db: any, order: any, items: any[]): Promise<void> {
+async function sendOrderEmail(env: Env, db: any, order: any, items: any[], logoUrl: string): Promise<void> {
   // Buscar destinatários ativos
   const { results: recipients } = await db.prepare(
     "SELECT email, nome FROM pedido_recipients WHERE ativo = 1"
@@ -3418,7 +3391,7 @@ async function sendOrderEmail(env: Env, db: any, order: any, items: any[]): Prom
   // Gerar PDF
   let pdfBuffer: ArrayBuffer;
   try {
-    pdfBuffer = await generateOrderPDF(db, order, items);
+    pdfBuffer = await generateOrderPDF(db, order, items, logoUrl);
   } catch (error) {
     console.error('❌ Erro ao gerar PDF:', error);
     return;
@@ -3555,7 +3528,7 @@ app.post("/api/orders", authMiddleware, async (c) => {
       cliente_endereco: cliente?.endereco,
       cliente_cidade: cliente?.cidade,
       cliente_estado: cliente?.estado
-    }, items);
+    }, items, new URL('/daxtellk-logomarca.png', c.req.url).toString());
     
     return c.json({
       success: true,

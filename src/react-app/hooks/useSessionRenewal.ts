@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { useAuth } from '@getmocha/users-service/react';
+import { useAuth } from '@/react-app/hooks/useAuth';
 
 /**
  * Hook para renovar a sessão automaticamente enquanto o usuário está ativo.

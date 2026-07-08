@@ -1,4 +1,4 @@
-import { useAuth } from '@getmocha/users-service/react';
+import { useAuth } from '@/react-app/hooks/useAuth';
 import { LogOut, LayoutDashboard, Package, BarChart3, TrendingUp, Upload, Menu, X, Settings, Users, ChevronDown, ChevronRight, UserCheck, FileText, BookOpen, DollarSign, ShoppingCart, List, Mail, Calendar, Wrench, ExternalLink } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
@@ -228,7 +228,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between p-4">
           <Link to="/dashboard" className="flex items-center space-x-3">
             <img 
-              src="https://mocha-cdn.com/019a55e0-b253-7447-911b-2276e1caf514/logo-sales-manager.png"
+              src="/logo-sales-manager.png"
               alt="SALMIX Logo"
               className="w-10 h-10 rounded-lg object-cover shadow-lg"
             />
@@ -262,7 +262,7 @@ export default function Navbar() {
           <div className="hidden lg:flex items-center space-x-3 p-6 border-b border-slate-700">
             <Link to="/dashboard" className="flex items-center space-x-3 group">
               <img 
-                src="https://mocha-cdn.com/019a55e0-b253-7447-911b-2276e1caf514/logo-sales-manager.png"
+                src="/logo-sales-manager.png"
                 alt="SALMIX Logo"
                 className="w-10 h-10 rounded-lg object-cover shadow-lg group-hover:shadow-blue-500/50 transition-all"
               />
