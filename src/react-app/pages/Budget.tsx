@@ -35,13 +35,15 @@ interface BudgetData {
   dez_26: number;
 }
 
+const ANO_CORRENTE = new Date().getFullYear().toString();
+
 export default function Budget() {
   const [budgetData, setBudgetData] = useState<BudgetData[]>([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
     negocio: '',
     vendedor: '',
-    ano: '2025'
+    ano: ANO_CORRENTE
   });
   const [showFilters, setShowFilters] = useState(true);
 
@@ -67,7 +69,7 @@ export default function Budget() {
     setFilters({
       negocio: '',
       vendedor: '',
-      ano: '2025'
+      ano: ANO_CORRENTE
     });
   };
 
