@@ -565,15 +565,17 @@ app.get("/api/dashboard/kpis", authMiddleware, async (c) => {
   console.log('  - Meses móveis calculados:', mesesMoveis.map(m => `${m.label}/${m.ano}`).join(', '));
   
   // Buscar vendas dos últimos 12 meses agrupadas por ano-mês
-  const queryVendasMoveis = `SELECT 
+  // Usa whereClauseHistorico (sem a exclusão de Salmix B2B do filtro "Todos") para bater
+  // com o total exibido nos cards "Valor Ano 2024/2025"
+  const queryVendasMoveis = `SELECT
     strftime('%Y', v.data_venda) as ano,
     strftime('%m', v.data_venda) as mes,
     SUM(v.valor_total) as total
   FROM vendas v
-  ${whereClause}
+  ${whereClauseHistorico}
   GROUP BY strftime('%Y', v.data_venda), strftime('%m', v.data_venda)`;
-  
-  const vendasMoveisQuery = await db.prepare(queryVendasMoveis).bind(...filterParams).all();
+
+  const vendasMoveisQuery = await db.prepare(queryVendasMoveis).bind(...filterParamsHistorico).all();
   
   // Criar mapa para acesso rápido: chave = "YYYY-MM"
   const mapVendas = new Map<string, number>();
