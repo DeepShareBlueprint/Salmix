@@ -11,6 +11,7 @@ import Vendas from "@/react-app/pages/Vendas";
 import Estoque from "@/react-app/pages/Estoque";
 import ImportacaoProtegida from "@/react-app/pages/ImportacaoProtegida";
 import Representantes from "@/react-app/pages/Representantes";
+import Vendedores from "@/react-app/pages/Vendedores";
 import Usuarios from "@/react-app/pages/Usuarios";
 import TesteEmail from "@/react-app/pages/TesteEmail";
 import AccessRequest from "@/react-app/pages/AccessRequest";
@@ -266,6 +267,16 @@ export default function App() {
               <ProtectedRoute>
                 <RoleProtectedRoute allowedRoles={['Administrador', 'Gerente']}>
                   <Relatorios />
+                </RoleProtectedRoute>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/vendedores"
+            element={
+              <ProtectedRoute>
+                <RoleProtectedRoute allowedRoles={['Administrador', 'Gerente']}>
+                  <Vendedores />
                 </RoleProtectedRoute>
               </ProtectedRoute>
             }

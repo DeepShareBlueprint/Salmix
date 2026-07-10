@@ -97,6 +97,7 @@ export default function Navbar() {
         { path: '/vendas/pedidos/lista', icon: List, label: 'Listar Pedidos', menuKey: 'vendas_lista' },
         { path: '/vendas/eficiencia', icon: UserCheck, label: 'Eficiência por Vendedor', menuKey: 'vendas_eficiencia' },
         { path: '/relatorios', icon: FileText, label: 'Relatórios', menuKey: 'vendas_relatorios' },
+        { path: '/vendedores', icon: Users, label: 'Vendedores', menuKey: 'vendas_vendedores' },
       ]
     },
     { 

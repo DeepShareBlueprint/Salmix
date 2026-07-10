@@ -1232,6 +1232,15 @@ app.delete("/api/usuarios/:id", authMiddleware, async (c) => {
   return c.json({ success: true });
 });
 
+// ==================== VENDEDORES ENDPOINTS ====================
+
+app.get("/api/vendedores", authMiddleware, async (c) => {
+  const { results } = await c.env.DB.prepare(
+    "SELECT id, vendedor, nome_vendedor, negocio, id_negocio, regional FROM vendedores ORDER BY nome_vendedor"
+  ).all();
+  return c.json(results);
+});
+
 // ==================== PRODUTOS ENDPOINTS ====================
 
 app.get("/api/produtos", authMiddleware, async (c) => {

@@ -307,6 +307,7 @@ INSERT OR IGNORE INTO menu_config (menu_key, menu_label, is_visible, parent_key)
     ('vendas_lista', 'Listar Pedidos', 1, 'vendas'),
     ('vendas_eficiencia', 'Eficiência por Vendedor', 1, 'vendas'),
     ('vendas_relatorios', 'Relatórios', 1, 'vendas'),
+    ('vendas_vendedores', 'Vendedores', 1, 'vendas'),
     ('operador_limpeza', 'Limpeza de Dados', 1, 'operador'),
     ('operador_usuarios', 'Usuários', 1, 'operador'),
     ('operador_recebe', 'Recebe Pedido', 1, 'operador'),
@@ -322,6 +323,7 @@ CREATE TABLE vendedores (
     nome_vendedor TEXT NOT NULL,
     regional TEXT,
     negocio TEXT,
+    id_negocio TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );

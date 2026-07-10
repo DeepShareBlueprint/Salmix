@@ -58,6 +58,15 @@ export interface Produto {
   updated_at?: string;
 }
 
+export interface Vendedor {
+  id: number;
+  vendedor: string;
+  nome_vendedor: string;
+  negocio?: string;
+  id_negocio?: string;
+  regional?: string;
+}
+
 export interface Cliente {
   id: number;
   codigo_cliente: string;
