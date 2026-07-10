@@ -106,7 +106,7 @@ export default function Importacao() {
       inventory: 'product_id;product_name;lote;validade;quantidade_disponivel;unidade_medida;armazem;data_atualizacao\nVET001;VACINA ANTIRRÁBICA;LOT123;31/12/2025;500;UN;Depósito A;17/11/2025',
       price_table: 'product_id;product_name;preco_base;preco_minimo;max_desconto_permitido;politica_preco\nVET001;VACINA ANTIRRÁBICA;29.50;25.00;0.11;padrão',
       clientes: 'codigo_cliente;nome_cliente;cnpj;email;telefone;endereco;cidade;estado\n001088;CLIENTE EXEMPLO LTDA;12.345.678/0001-90;contato@cliente.com;(11) 98765-4321;Rua Exemplo 123;São Paulo;SP',
-      vendedores: 'Vendedor 1;Nome_Vendedor 1;Regional;Negocio\nVEND001;João da Silva;Sul;Ave/Sui\nVEND002;Maria Santos;Norte;Ruminantes'
+      vendedores: 'Negócio;Vendedor;Nome;Regional\nAve/Sui;4201;João da Silva;Sul\nRuminantes;3601;Maria Santos;Norte'
     };
 
     const csvContent = templates[type as keyof typeof templates];

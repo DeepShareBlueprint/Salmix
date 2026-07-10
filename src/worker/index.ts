@@ -6349,19 +6349,22 @@ app.post("/api/import", authMiddleware, async (c) => {
             });
           } else if (type === 'vendedores') {
             // Process vendedores data
-            const vendedor = rowData['Vendedor 1'] || '';
-            const nomeVendedor = rowData['Nome_Vendedor 1'] || '';
+            const negocio = rowData['Negócio'] || '';
+            const vendedor = rowData['Vendedor'] || '';
+            const nomeVendedor = rowData['Nome'] || '';
             const regional = rowData['Regional'] || '';
-            const negocio = rowData['Negocio'] || '';
 
             if (!vendedor || !nomeVendedor) {
-              errors.push(`Linha ${lineIndex + 2}: Campos obrigatórios faltando - Vendedor 1: "${vendedor}", Nome_Vendedor 1: "${nomeVendedor}"`);
+              errors.push(`Linha ${lineIndex + 2}: Campos obrigatórios faltando - Vendedor: "${vendedor}", Nome: "${nomeVendedor}"`);
               continue;
             }
 
+            const { obterCodigoNegocio } = await import('@/shared/negocio-mapping');
+            const idNegocio = negocio ? obterCodigoNegocio(negocio) : null;
+
             vendasParaInserir.push({
               type: 'vendedores',
-              data: [vendedor, nomeVendedor, regional, negocio]
+              data: [vendedor, nomeVendedor, regional, negocio, idNegocio]
             });
           } else if (type === 'vendas') {
             // Map fields from the CSV structure
@@ -6641,8 +6644,8 @@ app.post("/api/import", authMiddleware, async (c) => {
               } else if (tipo === 'vendedores') {
                 const batch = c.env.DB.batch(
                   subBatch.map(d => c.env.DB.prepare(
-                    `INSERT OR REPLACE INTO vendedores (vendedor, nome_vendedor, regional, negocio)
-                     VALUES (?, ?, ?, ?)`
+                    `INSERT OR REPLACE INTO vendedores (vendedor, nome_vendedor, regional, negocio, id_negocio)
+                     VALUES (?, ?, ?, ?, ?)`
                   ).bind(...d))
                 );
                 await batch;
