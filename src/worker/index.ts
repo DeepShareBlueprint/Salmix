@@ -843,9 +843,11 @@ app.get("/api/dashboard/kpis", authMiddleware, async (c) => {
     // Converter nome de negócio para código se necessário
     const negocioCodigo = negocio ? obterCodigoNegocio(negocio) : null;
     
-    // DETECÇÃO DINÂMICA: Determinar sufixo do ano baseado no ano atual detectado
-    const anoSufixo = anoAtual.toString().slice(-2); // '25' para 2025, '26' para 2026, etc
-    
+    // O Budget é sempre planejado para o ano-calendário corrente, independente do
+    // ano mais recente com vendas lançadas (que pode ficar para trás caso a importação
+    // de vendas do ano novo ainda não tenha sido feita)
+    const anoSufixo = new Date().getFullYear().toString().slice(-2); // '25' para 2025, '26' para 2026, etc
+
     console.log('🎯 CÁLCULO DE META DINÂMICO:');
     console.log('  - Ano atual:', anoAtual);
     console.log('  - Sufixo de ano para colunas:', anoSufixo);
@@ -1542,10 +1544,13 @@ app.get("/api/vendas/meta", authMiddleware, async (c) => {
       "SELECT MAX(strftime('%Y', data_venda)) as ano_mais_recente FROM vendas WHERE data_venda IS NOT NULL"
     ).first() as any;
     
-    const anoCorrente = parseInt(anoMaisRecenteResult?.ano_mais_recente || '2025');
-    const anoSufixo = anoCorrente.toString().slice(-2); // '25' para 2025, '26' para 2026
-    
-    console.log('🎯 /api/vendas/meta - ANO DETECTADO:', anoCorrente, 'SUFIXO:', anoSufixo);
+    const anoMaisRecenteVendas = parseInt(anoMaisRecenteResult?.ano_mais_recente || '2025');
+    // O Budget é sempre planejado para o ano-calendário corrente, independente do
+    // ano mais recente com vendas lançadas (que pode ficar para trás caso a importação
+    // de vendas do ano novo ainda não tenha sido feita)
+    const anoSufixo = new Date().getFullYear().toString().slice(-2); // '25' para 2025, '26' para 2026
+
+    console.log('🎯 /api/vendas/meta - Ano mais recente com vendas:', anoMaisRecenteVendas, '- Sufixo do budget:', anoSufixo);
     
     if (tipo === 'mensal') {
       // Meta mensal: apenas o mês específico - usar sufixo dinâmico
