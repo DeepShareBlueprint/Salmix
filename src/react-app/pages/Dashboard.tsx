@@ -499,11 +499,13 @@ function Dashboard() {
   }
 
   // Preparar dados para o gráfico de evolução de vendas - 12 MESES MÓVEIS
+  // A Meta é sempre o orçamento do ano-calendário corrente (o único com budget real
+  // cadastrado), independente de qual ano cada barra da janela móvel representa
+  const anoBudgetCorrente = new Date().getFullYear();
   const dadosProjecao = kpis.vendasPorMes?.map((mes: any) => {
-    // Buscar meta do mês correto baseado no ano
-    const metaKey = `${mes.mes}-${mes.anoCompleto}`;
+    const metaKey = `${mes.mes}-${anoBudgetCorrente}`;
     const metaMes = metasMensais[metaKey] || 0;
-    
+
     return {
       ...mes,
       meta: metaMes,
