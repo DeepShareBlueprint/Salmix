@@ -275,6 +275,31 @@ CREATE TABLE menu_config (
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Itens padrão (devem ficar em sincronia com allNavItems em src/react-app/components/Navbar.tsx)
+INSERT OR IGNORE INTO menu_config (menu_key, menu_label, is_visible, parent_key) VALUES
+    ('dashboard', 'Dashboard', 1, NULL),
+    ('produtos', 'Produtos', 1, NULL),
+    ('forecast', 'Forecast', 1, NULL),
+    ('budget', 'Budget', 1, NULL),
+    ('vendas', 'Vendas', 1, NULL),
+    ('operador', 'Operador', 1, NULL),
+    ('config', 'Config', 1, NULL),
+    ('importacao', 'Importação', 1, NULL),
+    ('forecast_relatorios', 'Relatórios', 1, 'forecast'),
+    ('vendas_gestao', 'Gestão de Vendas', 1, 'vendas'),
+    ('vendas_portal', 'Portal de Vendas', 1, 'vendas'),
+    ('vendas_agenda', 'Agenda do Vendedor', 1, 'vendas'),
+    ('vendas_diario', 'Diário de Compromissos', 1, 'vendas'),
+    ('vendas_rota', 'Rota Inteligente do Dia', 1, 'vendas'),
+    ('vendas_pedidos', 'Novo Pedido', 1, 'vendas'),
+    ('vendas_lista', 'Listar Pedidos', 1, 'vendas'),
+    ('vendas_eficiencia', 'Eficiência por Vendedor', 1, 'vendas'),
+    ('vendas_relatorios', 'Relatórios', 1, 'vendas'),
+    ('operador_limpeza', 'Limpeza de Dados', 1, 'operador'),
+    ('operador_usuarios', 'Usuários', 1, 'operador'),
+    ('operador_recebe', 'Recebe Pedido', 1, 'operador'),
+    ('operador_prd', 'PRD', 1, 'operador');
+
 -- ============================================
 -- TABELA: vendedores
 -- Descrição: Cadastro de vendedores e suas regionais
